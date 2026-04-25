@@ -48,9 +48,9 @@ export default function Highlights({ categories }: { categories: CategorySummary
     <section id="highlights" className="relative scroll-mt-28 py-24">
       <div className="mx-auto max-w-6xl px-4">
         <SectionHeading
-          eyebrow="FAST TO BROWSE"
+          eyebrow="EASY TO VIEW"
           title="Everything is one click away."
-          subtitle="No pinned scroll tricks here — just a clean, stable section that works great on phone and feels premium."
+          subtitle="Open a category, tap a piece, and view the full photos (and video when available)."
         />
 
         <motion.div
@@ -61,20 +61,16 @@ export default function Highlights({ categories }: { categories: CategorySummary
           className="mt-14 grid gap-6 md:grid-cols-2"
         >
           <motion.div variants={item} className="glass rounded-3xl p-7 md:p-8">
-            <p className="text-xs font-semibold tracking-[0.28em] text-white/60">HOW IT WORKS</p>
+            <p className="text-xs font-semibold tracking-[0.28em] text-white/60">HOW TO VIEW</p>
             <h3 className="mt-4 font-[var(--font-display)] text-3xl font-bold leading-tight tracking-tight">
-              Browse → open product → view all media.
+              Browse → open piece → view everything.
             </h3>
             <p className="mt-4 text-sm leading-relaxed text-white/70 md:text-base">
-              Each product page automatically shows whatever you add in the `media` folder (video if present, plus every photo).
+              Tap a category to see all pieces. Open any piece to view the full gallery in high quality.
             </p>
 
             <ul className="mt-7 space-y-3 text-sm text-white/70">
-              {[
-                "Categories sorted by most pieces",
-                "Every product gets its own page",
-                "Video + full photo gallery per product"
-              ].map((t) => (
+              {["Full photos for each piece", "Video included when available", "Share product links easily"].map((t) => (
                 <li key={t} className="flex items-start gap-2">
                   <span className="mt-0.5 grid size-5 place-items-center rounded-full bg-white/[0.06] ring-1 ring-white/[0.10]">
                     <Check className="size-3" />
