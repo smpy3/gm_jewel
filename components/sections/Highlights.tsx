@@ -7,21 +7,23 @@ import { ArrowRight, Check } from "lucide-react";
 import Button from "@/components/ui/Button";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useReveal } from "@/hooks/useReveal";
+import { withBasePath } from "@/lib/paths";
 
 type CategorySummary = { name: string; slug: string; count: number; thumb?: string; href: string };
 
 function MediaTile({ c }: { c: CategorySummary }) {
   if (!c.thumb) return null;
-  const isVideo = c.thumb.endsWith(".mp4");
+  const thumb = withBasePath(c.thumb);
+  const isVideo = thumb.endsWith(".mp4");
 
   return (
     <Link href={c.href} className="group glass overflow-hidden rounded-3xl">
       <div className="relative aspect-[4/3] overflow-hidden bg-white/[0.02]">
         {isVideo ? (
-          <video className="absolute inset-0 h-full w-full object-cover opacity-90" autoPlay muted loop playsInline preload="metadata" src={c.thumb} />
+          <video className="absolute inset-0 h-full w-full object-cover opacity-90" autoPlay muted loop playsInline preload="metadata" src={thumb} />
         ) : (
           <img
-            src={c.thumb}
+            src={thumb}
             alt={c.name}
             loading="lazy"
             className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.05]"

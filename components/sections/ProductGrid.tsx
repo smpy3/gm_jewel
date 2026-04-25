@@ -1,6 +1,7 @@
 // ProductGrid: renders category headers + product cards for the media-driven catalog.
 import Link from "next/link";
 import type { CatalogCategory } from "@/lib/catalog";
+import { withBasePath } from "@/lib/paths";
 
 export default function ProductGrid({ catalog }: { catalog: CatalogCategory[] }) {
   const maxCount = Math.max(0, ...catalog.map((c) => c.products.length));
@@ -43,10 +44,23 @@ export default function ProductGrid({ catalog }: { catalog: CatalogCategory[] })
                   <Link key={p.href} href={p.href} className="group glass overflow-hidden rounded-3xl">
                     <div className="relative aspect-[4/5] overflow-hidden bg-white/[0.02]">
                       {p.thumb ? (
-                        p.thumb.endsWith(".mp4") ? (
-                          <video className="absolute inset-0 h-full w-full object-cover opacity-90" autoPlay muted loop playsInline preload="metadata" src={p.thumb} />
+                        withBasePath(p.thumb).endsWith(".mp4") ? (
+                          <video
+                            className="absolute inset-0 h-full w-full object-cover opacity-90"
+                            autoPlay
+                            muted
+                            loop
+                            playsInline
+                            preload="metadata"
+                            src={withBasePath(p.thumb)}
+                          />
                         ) : (
-                          <img src={p.thumb} alt={p.productName} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.05]" />
+                          <img
+                            src={withBasePath(p.thumb)}
+                            alt={p.productName}
+                            loading="lazy"
+                            className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.05]"
+                          />
                         )
                       ) : null}
                       <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-ink-950/10 to-transparent" />

@@ -7,6 +7,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useReveal } from "@/hooks/useReveal";
+import { withBasePath } from "@/lib/paths";
 
 type CategorySummary = { name: string; slug: string; count: number; thumb?: string; href: string };
 
@@ -63,7 +64,7 @@ export default function Showcase({
             <div className="glass group relative overflow-hidden rounded-[2.2rem]">
               {hero?.thumb ? (
                 <div className="relative aspect-[16/10] overflow-hidden md:aspect-[16/9]">
-                  {hero.thumb.endsWith(".mp4") ? (
+                  {withBasePath(hero.thumb).endsWith(".mp4") ? (
                     <video
                       className="absolute inset-0 h-full w-full object-cover opacity-90"
                       autoPlay
@@ -71,11 +72,11 @@ export default function Showcase({
                       loop
                       playsInline
                       preload="metadata"
-                      src={hero.thumb}
+                      src={withBasePath(hero.thumb)}
                     />
                   ) : (
                     <img
-                      src={hero.thumb}
+                      src={withBasePath(hero.thumb)}
                       alt={hero.name}
                       className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.03]"
                       loading="lazy"
@@ -109,7 +110,7 @@ export default function Showcase({
                   <Link key={c.href} href={c.href} className="group glass overflow-hidden rounded-3xl">
                     <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
                       {c.thumb ? (
-                        c.thumb.endsWith(".mp4") ? (
+                        withBasePath(c.thumb).endsWith(".mp4") ? (
                           <video
                             className="absolute inset-0 h-full w-full object-cover opacity-90"
                             autoPlay
@@ -117,11 +118,11 @@ export default function Showcase({
                             loop
                             playsInline
                             preload="metadata"
-                            src={c.thumb}
+                            src={withBasePath(c.thumb)}
                           />
                         ) : (
                           <img
-                            src={c.thumb}
+                            src={withBasePath(c.thumb)}
                             alt={c.name}
                             className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
                             loading="lazy"
@@ -148,7 +149,7 @@ export default function Showcase({
                 <Link key={c.href} href={c.href} className="group glass overflow-hidden rounded-3xl">
                   <div className="relative aspect-[16/10] overflow-hidden bg-white/[0.02]">
                     {c.thumb ? (
-                      c.thumb.endsWith(".mp4") ? (
+                      withBasePath(c.thumb).endsWith(".mp4") ? (
                         <video
                           className="absolute inset-0 h-full w-full object-cover opacity-90"
                           autoPlay
@@ -156,11 +157,11 @@ export default function Showcase({
                           loop
                           playsInline
                           preload="metadata"
-                          src={c.thumb}
+                          src={withBasePath(c.thumb)}
                         />
                       ) : (
                         <img
-                          src={c.thumb}
+                          src={withBasePath(c.thumb)}
                           alt={c.name}
                           className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
                           loading="lazy"

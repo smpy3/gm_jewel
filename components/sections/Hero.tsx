@@ -7,6 +7,7 @@ import { ArrowRight, Sparkles } from "lucide-react";
 import Button from "@/components/ui/Button";
 import { useGsapParallax } from "@/hooks/useGsapParallax";
 import { useReveal } from "@/hooks/useReveal";
+import { withBasePath } from "@/lib/paths";
 
 export default function Hero() {
   const { container, item } = useReveal();
@@ -81,7 +82,7 @@ export default function Hero() {
                   loop
                   playsInline
                   preload="metadata"
-                  src="/media/Rings/Product_1/c1_p1.mp4"
+                  src={withBasePath("/media/Rings/Product_1/c1_p1.mp4")}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 via-ink-950/10 to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 flex items-end justify-between">

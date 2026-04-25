@@ -4,6 +4,7 @@
 import { motion } from "framer-motion";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { useReveal } from "@/hooks/useReveal";
+import { withBasePath } from "@/lib/paths";
 
 const items = [
   { title: "Halo Ring", category: "Rings", img: "/media/Rings/Product_2/c1_p2_2.jpg" },
@@ -42,7 +43,7 @@ export default function CollectionGrid() {
             >
               <div className="relative aspect-[4/5] overflow-hidden">
                 <img
-                  src={it.img}
+                  src={withBasePath(it.img)}
                   alt={it.title}
                   loading="lazy"
                   className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.05]"
@@ -61,4 +62,3 @@ export default function CollectionGrid() {
     </section>
   );
 }
-

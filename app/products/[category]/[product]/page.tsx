@@ -4,6 +4,7 @@ import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
 import Button from "@/components/ui/Button";
 import { findProduct, getAllProductParams } from "@/lib/catalog";
+import { withBasePath } from "@/lib/paths";
 
 export function generateStaticParams() {
   return getAllProductParams();
@@ -46,7 +47,15 @@ export default async function ProductPage({ params }: { params: Promise<{ catego
           {product.video ? (
             <div className="mt-10 overflow-hidden rounded-[2rem] border border-white/[0.10] bg-white/[0.03] p-3">
               <div className="relative aspect-video overflow-hidden rounded-[1.6rem]">
-                <video className="absolute inset-0 h-full w-full object-cover" autoPlay muted loop playsInline preload="metadata" src={product.video} />
+                <video
+                  className="absolute inset-0 h-full w-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
+                  src={withBasePath(product.video)}
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-ink-950/55 via-ink-950/10 to-transparent" />
               </div>
             </div>
@@ -56,12 +65,17 @@ export default async function ProductPage({ params }: { params: Promise<{ catego
             {product.images.map((src) => (
               <a
                 key={src}
-                href={src}
+                href={withBasePath(src)}
                 className="group glass overflow-hidden rounded-3xl"
                 aria-label={`Open image ${product.productName}`}
               >
                 <div className="relative aspect-[4/5] overflow-hidden">
-                  <img src={src} alt={product.productName} loading="lazy" className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]" />
+                  <img
+                    src={withBasePath(src)}
+                    alt={product.productName}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-[1.04]"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-ink-950/55 via-ink-950/0 to-transparent opacity-70" />
                 </div>
               </a>
