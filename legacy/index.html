@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Category / Product Gallery</title>
+
+<style>
+:root{
+  --bg:#0b0b0d; --card:#151518; --text:#fff;
+  --muted:#b5b5b5; --accent:#6ea8ff;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+header{max-width:1200px;margin:auto;padding:40px 20px}
+h1{margin:0;font-size:2.4rem}
+h2{margin:0;font-size:1.4rem}
+p{color:var(--muted);margin:10px 0 0}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:20px;
+  max-width:1200px;
+  margin:auto;
+  padding:20px
+}
+.card{
+  background:var(--card);
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transform:translateY(12px);
+  opacity:0;
+  animation:fadeUp .45s ease forwards;
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 14px 50px rgba(0,0,0,.55);
+}
+
+.thumb{position:relative}
+.thumb img,.thumb video{
+  width:100%;height:200px;object-fit:cover;display:block;
+  filter:saturate(1.05) contrast(1.02);
+  transition:transform .4s ease, box-shadow .4s ease, filter .4s ease;
+}
+.card:hover .thumb img,
+.card:hover .thumb video{
+  transform:scale(1.05);
+  box-shadow:0 12px 40px rgba(255,255,255,.08);
+  filter:saturate(1.12) contrast(1.05);
+}
+.thumb::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(to top, rgba(0,0,0,.55), rgba(0,0,0,0));
+  pointer-events:none;
+}
+.body{padding:16px}
+
+.masonry{columns:1;gap:16px;padding:20px;max-width:1200px;margin:auto}
+@media(min-width:700px){.masonry{columns:2}}
+@media(min-width:1100px){.masonry{columns:3}}
+
+.tile{
+  break-inside:avoid;
+  margin-bottom:16px;
+  cursor:pointer;
+  position:relative;
+  border-radius:12px;
+}
+.tile img,.tile video{
+  width:100%;
+  border-radius:12px;
+  display:block;
+  transition:transform .4s ease, box-shadow .4s ease, filter .4s ease;
+}
+.tile:hover img,
+.tile:hover video{
+  transform:scale(1.05);
+  box-shadow:0 12px 40px rgba(255,255,255,.15);
+  filter:saturate(1.12) contrast(1.05);
+}
+
+/* Make videos feel more "hero" */
+.tile video{
+  min-height:260px;
+  object-fit:cover;
+}
+
+/* ======= VIDEO HIGHLIGHT (more obvious) ======= */
+.tile.is-video{
+  outline:2px solid rgba(110,168,255,.65);
+  box-shadow:0 0 0 1px rgba(110,168,255,.15), 0 18px 60px rgba(0,0,0,.55);
+}
+.tile.is-video:hover{
+  outline:2px solid rgba(110,168,255,.95);
+}
+
+/* Badge (make it more visible) */
+.badge{
+  position:absolute;top:10px;right:10px;
+  background:rgba(110,168,255,.22);
+  border:1px solid rgba(110,168,255,.55);
+  color:#fff;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:.8rem;
+  font-weight:700;
+  letter-spacing:.04em;
+  backdrop-filter: blur(6px);
+  text-transform:uppercase;
+}
+
+/* Play icon overlay (clear “this is a video”) */
+.play-icon{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:54px;
+  color:white;
+  opacity:.9;
+  pointer-events:none;
+  text-shadow: 0 14px 35px rgba(0,0,0,.7);
+}
+
+/* subtle glow ring for video tiles */
+.tile.is-video::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:14px;
+  pointer-events:none;
+  background:radial-gradient(circle at 50% 0%, rgba(110,168,255,.35), transparent 55%);
+  opacity:.8;
+}
+
+.back{
+  margin:20px;display:inline-block;cursor:pointer;color:var(--accent);
+  user-select:none;
+}
+
+/* Lightbox */
+#lightbox{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:none;align-items:center;justify-content:center;z-index:999
+}
+#lightbox.active{display:flex}
+#lightbox img,#lightbox video{
+  max-width:90vw;max-height:90vh;border-radius:12px;
+}
+.close{
+  position:fixed;top:18px;right:22px;font-size:2rem;cursor:pointer;user-select:none;
+}
+@keyframes fadeUp{to{opacity:1;transform:none}}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1 id="title">Lab Grownd Diamonds Categories</h1>
+  <p id="subtitle">Select a category</p>
+</header>
+
+<div id="content"></div>
+
+<div id="lightbox" onclick="if(event.target.id==='lightbox')closeLightbox()">
+  <div class="close" onclick="closeLightbox()">×</div>
+  <div id="lightboxContent"></div>
+</div>
+
+<script>
+/* ========= EDIT ONLY THIS DATA ========= */
+const CATEGORIES = [
+  {
+    title: "Rings",
+    products: [
+      { title: "Product_1", folder: "media/Rings/Product_1/", imgPrefix: "c1_p1_", imgCount: 5, video: "c1_p1.mp4" },
+      { title: "Product_2", folder: "media/Rings/Product_2/", imgPrefix: "c1_p2_", imgCount: 5, video: "c1_p2.mp4" },
+      { title: "Product_3", folder: "media/Rings/Product_3/", imgPrefix: "c1_p3_", imgCount: 5, video: "c1_p3.mp4" },
+      { title: "Product_4", folder: "media/Rings/Product_4/", imgPrefix: "c1_p4_", imgCount: 5, video: "c1_p4.mp4" },
+      { title: "Product_5", folder: "media/Rings/Product_5/", imgPrefix: "c1_p5_", imgCount: 5, video: "c1_p5.mp4" },
+      { title: "Product_6", folder: "media/Rings/Product_6/", imgPrefix: "c1_p6_", imgCount: 5, video: "c1_p6.mp4" },
+      { title: "Product_7", folder: "media/Rings/Product_7/", imgPrefix: "c1_p7_", imgCount: 5, video: "c1_p7.mp4" }
+    ]
+  },
+
+  {
+    title: "Bracelets",
+    products: [
+      { title: "Product_1", folder: "media/Bracelets/Product_1/", imgPrefix: "b_p1_", imgCount: 5, video: "b_p1.mp4" },
+      { title: "Product_2", folder: "media/Bracelets/Product_2/", imgPrefix: "b_p2_", imgCount: 5, video: "b_p2.mp4" },
+    ]
+  },
+
+  {
+    title: "Necklace",
+    products: [
+      { title: "Product_1", folder: "media/Necklace/Product_1/", imgPrefix: "n_p1_", imgCount: 5, video: "n_p1.mp4" },
+      { title: "Product_2", folder: "media/Necklace/Product_2/", imgPrefix: "n_p2_", imgCount: 5, video: "n_p2.mp4" },
+    ]
+  },
+
+  {
+    title: "Necklace and Earring",
+    products: [
+      { title: "Product_1", folder: "media/Necklace and Earring/Product_1/", imgPrefix: "ne_p1_", imgCount: 5, video: "ne_p1.mp4" },
+      { title: "Product_2", folder: "media/Necklace and Earring/Product_2/", imgPrefix: "ne_p2_", imgCount: 5, video: "ne_p2.mp4" },
+      { title: "Product_3", folder: "media/Necklace and Earring/Product_3/", imgPrefix: "ne_p3_", imgCount: 5, video: "ne_p3.mp4" },
+    ]
+  },
+
+  {
+    title: "Pendant and Earring",
+    products: [
+      { title: "Product_1", folder: "media/Pendant and Earring/Product_1/", imgPrefix: "pe_p1_", imgCount: 5, video: "pe_p1.mp4" },
+      { title: "Product_2", folder: "media/Pendant and Earring/Product_2/", imgPrefix: "pe_p2_", imgCount: 5, video: "pe_p2.mp4" },
+    ]
+  },
+
+  {
+    title: "Bangle",
+    products: [
+      { title: "Product_1", folder: "media/Bangle/Product_1/", imgPrefix: "ba_p1_", imgCount: 5, video: "ba_p1.mp4" },
+    ]
+  },
+
+  {
+    title: "Earrings",
+    products: [
+      { title: "Product_1", folder: "media/Earrings/Product_1/", imgPrefix: "e_p1_", imgCount: 5, video: "e_p1.mp4" },
+    ]
+  },
+];
+
+const content = document.getElementById("content");
+const titleEl = document.getElementById("title");
+const subtitleEl = document.getElementById("subtitle");
+
+showCategories();
+
+/* Build media list for a product
+   - If videoFirst=true, video is put FIRST in the list (your request)
+*/
+function buildMedia(product, { videoFirst=false } = {}){
+  const imgs = [];
+  for(let i=1;i<=product.imgCount;i++){
+    imgs.push(product.folder + product.imgPrefix + i + ".jpg");
+  }
+
+  const hasVideo = product.video && product.video.trim();
+  const vid = hasVideo ? (product.folder + product.video) : null;
+
+  if(videoFirst && vid) return [vid, ...imgs];
+  return vid ? [...imgs, vid] : imgs;
+}
+
+/* Thumbnail: first media item */
+function thumbForProduct(p){
+  const media = buildMedia(p, { videoFirst:false });
+  return media[0] || "";
+}
+
+function renderThumb(src){
+  if(!src) return `<div style="height:200px;background:linear-gradient(135deg,#222,#111)"></div>`;
+  const isVideo = src.toLowerCase().endsWith(".mp4");
+
+  return isVideo
+    ? `
+      <video
+        src="${escapeAttr(src)}"
+        muted
+        playsinline
+        preload="metadata"
+        loop
+        onmouseenter="this.play()"
+        onmouseleave="this.pause(); this.currentTime=0;"
+      ></video>
+      <div class="play-icon">▶</div>
+      <div class="badge">VIDEO</div>
+    `
+    : `<img src="${escapeAttr(src)}" loading="lazy" alt="" />`;
+}
+
+/* Views */
+function showCategories(){
+  titleEl.innerText = "Categories";
+  subtitleEl.innerText = "Select a category";
+
+  content.innerHTML = `
+    <div class="grid">
+      ${CATEGORIES.map((cat,ci)=>{
+        const firstThumb = cat.products?.[0] ? thumbForProduct(cat.products[0]) : "";
+        return `
+          <div class="card" onclick="showProducts(${ci})">
+            <div class="thumb">${renderThumb(firstThumb)}</div>
+            <div class="body">
+              <h2>${escapeHtml(cat.title)}</h2>
+              <p>${cat.products?.length ?? 0} products</p>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function showProducts(ci){
+  const cat = CATEGORIES[ci];
+  titleEl.innerText = cat.title;
+  subtitleEl.innerText = "Select a product";
+
+  content.innerHTML = `
+    <span class="back" onclick="showCategories()">← Back</span>
+    <div class="grid">
+      ${cat.products.map((p,pi)=>{
+        const th = thumbForProduct(p);
+        const count = p.imgCount + (p.video && p.video.trim() ? 1 : 0);
+        return `
+          <div class="card" onclick="showGallery(${ci},${pi})">
+            <div class="thumb">${renderThumb(th)}</div>
+            <div class="body">
+              <h2>${escapeHtml(p.title)}</h2>
+              <p>${count} items</p>
+            </div>
+          </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
+
+function showGallery(ci,pi){
+  const p = CATEGORIES[ci].products[pi];
+
+  // ✅ YOUR REQUEST: make 1st tile video (if exists)
+  const media = buildMedia(p, { videoFirst:true });
+
+  titleEl.innerText = p.title;
+  subtitleEl.innerText = CATEGORIES[ci].title;
+
+  content.innerHTML = `
+    <span class="back" onclick="showProducts(${ci})">← Back</span>
+    <div class="masonry">
+      ${media.map(src => tile(src)).join("")}
+    </div>
+  `;
+}
+
+function tile(src){
+  const isVideo = src.toLowerCase().endsWith(".mp4");
+
+  return `
+    <div class="tile ${isVideo ? "is-video" : ""}" onclick="openLightbox('${escapeAttr(src)}')">
+      ${isVideo
+        ? `
+          <video
+            src="${escapeAttr(src)}"
+            muted
+            playsinline
+            preload="metadata"
+            loop
+            onmouseenter="this.play()"
+            onmouseleave="this.pause(); this.currentTime=0;"
+          ></video>
+          <div class="play-icon">▶</div>
+          <div class="badge">VIDEO</div>
+        `
+        : `<img src="${escapeAttr(src)}" loading="lazy" alt=""/>`
+      }
+    </div>
+  `;
+}
+
+/* Lightbox */
+function openLightbox(src){
+  const box = document.getElementById("lightbox");
+  const c = document.getElementById("lightboxContent");
+  const isVideo = src.toLowerCase().endsWith(".mp4");
+
+  c.innerHTML = isVideo
+    ? `<video src="${escapeAttr(src)}" controls autoplay muted loop playsinline></video>`
+    : `<img src="${escapeAttr(src)}" alt=""/>`;
+
+  box.classList.add("active");
+}
+
+function closeLightbox(){
+  const box = document.getElementById("lightbox");
+  const c = document.getElementById("lightboxContent");
+  box.classList.remove("active");
+  c.innerHTML = "";
+}
+
+/* Helpers */
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(s){
+  return String(s).replace(/'/g, "%27");
+}
+</script>
+
+</body>
+</html>
